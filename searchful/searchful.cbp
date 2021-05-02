@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="searchful" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug_Mint64">
+				<Option output="$(WORKSPACEDIR)/!out/bin/$(TARGET_NAME)/$(PROJECTNAME)" prefix_auto="0" extension_auto="1" />
+				<Option object_output="$(WORKSPACEDIR)/!out/obj/$(TARGET_NAME)/$(PROJECTNAME)" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+				<Option projectIncludeDirsRelation="1" />
+				<Option projectResourceIncludeDirsRelation="1" />
+				<Option projectLibDirsRelation="1" />
+				<Compiler>
+					<Add option="-g" />
+					<Add directory="/usr/include/gtk-2.0" />
+					<Add directory="/usr/lib/x86_64-linux-gnu/gtk-2.0/include" />
+					<Add directory="/usr/include/glib-2.0" />
+					<Add directory="/usr/lib/x86_64-linux-gnu/glib-2.0/include" />
+					<Add directory="/usr/include/cairo" />
+					<Add directory="/usr/include/pango-1.0" />
+					<Add directory="/usr/include/harfbuzz" />
+					<Add directory="/usr/include/gdk-pixbuf-2.0" />
+					<Add directory="/usr/include/atk-1.0" />
+					<Add directory="/usr/include/poppler/glib" />
+				</Compiler>
+				<Linker>
+					<Add library="libgtk-x11-2.0" />
+					<Add library="libgdk-x11-2.0" />
+					<Add library="libpango-1.0" />
+					<Add library="libglib-2.0" />
+					<Add library="libgdk_pixbuf-2.0" />
+					<Add library="libatk-1.0" />
+					<Add library="libgobject-2.0" />
+					<Add library="libpoppler-glib" />
+					<Add library="libzip" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+		</Compiler>
+		<Unit filename="src/0config.h" />
+		<Unit filename="src/callbacks.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/callbacks.h" />
+		<Unit filename="src/interface.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/interface.h" />
+		<Unit filename="src/lgpl.h" />
+		<Unit filename="src/main.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/misc.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/misc.h" />
+		<Unit filename="src/regexwizard.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/regexwizard.h" />
+		<Unit filename="src/savestate.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/savestate.h" />
+		<Unit filename="src/search.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/search.h" />
+		<Unit filename="src/support.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/support.h" />
+		<Unit filename="src/systemio.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/systemio.h" />
+		<Extensions />
+	</Project>
+</CodeBlocks_project_file>

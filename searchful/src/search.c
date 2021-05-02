@@ -1,3 +1,4 @@
+#include "0config.h"
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
@@ -31,19 +32,19 @@ GStaticMutex mutex_Control = G_STATIC_MUTEX_INIT; /* Global mutex used by savest
 
 /* it's very easy to improve the quality by changing the field icon_file_name */
 static t_symstruct lookuptable[] = {
-    { "txt-type", "icon-text-generic.png", FORMAT_TXT }, 
-    { "odt-type", "icon-odt.png", FORMAT_OFFICE_TEXT }, 
-    { "docx-type","icon-doc.png", FORMAT_OFFICE_TEXT }, 
+    { "txt-type", "icon-text-generic.png", FORMAT_TXT },
+    { "odt-type", "icon-odt.png", FORMAT_OFFICE_TEXT },
+    { "docx-type","icon-doc.png", FORMAT_OFFICE_TEXT },
     { "rtf-type", "icon-word-processor.png", FORMAT_OFFICE_TEXT },
     { "doc-type", "icon-doc.png", FORMAT_OFFICE_TEXT }, /* 5 */
     { "abw-type", "icon-word-processor.png", FORMAT_OFFICE_TEXT },
-    { "ods-type", "icon-ods.png", FORMAT_OFFICE_SHEET }, 
-    { "xlsx-type", "icon-xls.png", FORMAT_OFFICE_SHEET }, 
+    { "ods-type", "icon-ods.png", FORMAT_OFFICE_SHEET },
+    { "xlsx-type", "icon-xls.png", FORMAT_OFFICE_SHEET },
     { "xls-type", "icon-xls.png", FORMAT_OFFICE_SHEET },
-    { "odb-type", "icon-odb.png", FORMAT_OFFICE_BASE },/* 10*/ 
-    { "png-type", "icon-image.png", FORMAT_IMAGE },  
-    { "jpg-type", "icon-image.png", FORMAT_IMAGE }, 
-    { "jpeg-type", "icon-image.png", FORMAT_IMAGE }, 
+    { "odb-type", "icon-odb.png", FORMAT_OFFICE_BASE },/* 10*/
+    { "png-type", "icon-image.png", FORMAT_IMAGE },
+    { "jpg-type", "icon-image.png", FORMAT_IMAGE },
+    { "jpeg-type", "icon-image.png", FORMAT_IMAGE },
     { "xcf-type", "icon-image.png", FORMAT_IMAGE },
     { "pdf-type", "icon-pdf.png", FORMAT_PDF },/* 15 */
     { "svg-type", "icon-drawing.png", FORMAT_SVG },
@@ -86,7 +87,7 @@ static t_symstruct lookuptable[] = {
 
 
 /*****************************
- function to obtain infos 
+ function to obtain infos
  about a PDF file
  We us many poppler funcs
  to obtain the infos at the
@@ -105,13 +106,13 @@ gchar *PDFCheckFile(gchar *path_to_file, gchar *path_to_tmp_file)
     PopplerPage *page;
     gint i, j;
     gint pdf_npages; /* integer used to store total amount of pages of the pdf file */
-    FILE *outputFile;    
+    FILE *outputFile;
 
   /* first step : converting from path format to URI format */
     uri_path = g_filename_to_uri(path_to_file, NULL,NULL);
 
     doc = poppler_document_new_from_file(uri_path, NULL, &err);
-    if (!doc) 
+    if (!doc)
      {
         printf("%s\n", err->message);
         g_error_free(err);
@@ -123,7 +124,7 @@ gchar *PDFCheckFile(gchar *path_to_file, gchar *path_to_tmp_file)
    /* printf("* This PDF has %d pages *\n", pdf_npages);*/
 
     page = poppler_document_get_page(doc, 0);/* #0 = first page */
-    if(!page) 
+    if(!page)
 	{
          printf("* Could not open first page of document *\n");
          g_object_unref(doc);
@@ -151,7 +152,7 @@ gchar *PDFCheckFile(gchar *path_to_file, gchar *path_to_tmp_file)
 }
 
 
-/* OPenDocument Text ODT files : read a supposed docx file, unzip it, check if contains the stuff for a ODT writer file 
+/* OPenDocument Text ODT files : read a supposed docx file, unzip it, check if contains the stuff for a ODT writer file
  * entry1 = path to the supposed ODT file
  * entry 2 = path to a filename, text coded located in system TEMPDIR
 * return ; path to the content or NULL if not a true Doc-x file
@@ -181,7 +182,7 @@ gchar *ODTCheckFile(gchar *path_to_file, gchar *path_to_tmp_file)
  struct zip_file *fpz=NULL;
  struct zip_stat sbzip;
  gchar *str, c;/* for dynamic string allocation */
- gint j=1; 
+ gint j=1;
  /* opens the doc-x file supposed to be zipped */
   err=0;
   archive=zip_open(path_to_file,ZIP_CHECKCONS,&err);
@@ -191,20 +192,20 @@ gchar *ODTCheckFile(gchar *path_to_file, gchar *path_to_tmp_file)
           fprintf(stderr,"«%s» %d in function «%s» ,err=%d\n«%s»\n",__FILE__,__LINE__,__FUNCTION__,err,buf);
           return NULL;
         }
- 
-  nto = zip_get_num_entries(archive, ZIP_FL_UNCHANGED); 
+
+  nto = zip_get_num_entries(archive, ZIP_FL_UNCHANGED);
   // printf("l'archive contient:%d fichiers\n", nto);
 
   exist_document_xml = zip_name_locate(archive, "content.xml" ,0);
   if(exist_document_xml>-1)
      printf("* XML ODT document present in position:%d *\n", exist_document_xml);
   else
-   {  
+   {
      printf("* Error ! %s isn't an ODT file ! *\n", path_to_file);
      return NULL;
    }
   /* now we must open document.xml with this index number*/
-  fpz = zip_fopen_index(archive, exist_document_xml , 0); 
+  fpz = zip_fopen_index(archive, exist_document_xml , 0);
   assert (fpz!=NULL);/* exit if somewhat wrong is happend */
 
   /* we must know the size in bytes of document.xml */
@@ -218,7 +219,7 @@ gchar *ODTCheckFile(gchar *path_to_file, gchar *path_to_tmp_file)
            }
 
   /* copy document.xml to system TEMPDIR */
-  pBufferRead = g_malloc(sbzip.size*sizeof(gchar)+sizeof(gchar)); 
+  pBufferRead = g_malloc(sbzip.size*sizeof(gchar)+sizeof(gchar));
   assert(pBufferRead != NULL);
   /* read all datas in buffer p and extract the document.xml file from doc-x, in memory */
   if(zip_fread(fpz, pBufferRead , sbzip.size) != sbzip.size)
@@ -229,14 +230,14 @@ gchar *ODTCheckFile(gchar *path_to_file, gchar *path_to_tmp_file)
              zip_close(archive);
              return NULL;
            }/* erreur */
-  
+
  /* in the TEMPDIR directory ! */
   outputFile = fopen(path_to_tmp_file,"w");
- 
+
  /* parse and convert to pure text the document.xml */
 
  str = (gchar*)g_malloc(sizeof(gchar));
- 
+
  i=0;
  while(i<sbzip.size)
    {
@@ -250,15 +251,15 @@ gchar *ODTCheckFile(gchar *path_to_file, gchar *path_to_tmp_file)
                   str = (gchar*)realloc(str, j * sizeof(gchar));
                   str[j-1] = '\n';
                   j++;
-                  i = i+9*sizeof(gchar); 
+                  i = i+9*sizeof(gchar);
                 }
              else
-                i = i+sizeof(gchar);             
+                i = i+sizeof(gchar);
             }
            while ( g_ascii_strncasecmp ((gchar*)  &pBufferRead[i],">", sizeof(gchar))  !=0);
-         i= i+sizeof(gchar); 
+         i= i+sizeof(gchar);
         }/* if */
-       else 
+       else
            /* we have now to escape 5 special chars */
           {
               if(g_ascii_strncasecmp ((gchar*)  &pBufferRead[i],"&apos;",6* sizeof(gchar))  ==  0 )
@@ -266,7 +267,7 @@ gchar *ODTCheckFile(gchar *path_to_file, gchar *path_to_tmp_file)
                     str = (gchar*)realloc(str, j * sizeof(gchar));
                     str[j-1] = '\'';
                     j++;
-                    i = i+6*sizeof(gchar); 
+                    i = i+6*sizeof(gchar);
                  }
               else
                   if(g_ascii_strncasecmp ((gchar*)  &pBufferRead[i],"&quot;",6* sizeof(gchar))  ==  0 )
@@ -274,7 +275,7 @@ gchar *ODTCheckFile(gchar *path_to_file, gchar *path_to_tmp_file)
                        str = (gchar*)realloc(str, j * sizeof(gchar));
                        str[j-1] = '"';
                        j++;
-                       i = i+6*sizeof(gchar); 
+                       i = i+6*sizeof(gchar);
                     }
                    else
                      if(g_ascii_strncasecmp ((gchar*)  &pBufferRead[i],"&lt;",4* sizeof(gchar))  ==  0 )
@@ -282,7 +283,7 @@ gchar *ODTCheckFile(gchar *path_to_file, gchar *path_to_tmp_file)
                           str = (gchar*)realloc(str, j * sizeof(gchar));
                           str[j-1] = '<';
                           j++;
-                          i = i+4*sizeof(gchar); 
+                          i = i+4*sizeof(gchar);
                        }
                       else
                         if(g_ascii_strncasecmp ((gchar*)  &pBufferRead[i],"&gt;",4* sizeof(gchar))  ==  0 )
@@ -290,7 +291,7 @@ gchar *ODTCheckFile(gchar *path_to_file, gchar *path_to_tmp_file)
                              str = (gchar*)realloc(str, j * sizeof(gchar));
                              str[j-1] = '>';
                              j++;
-                             i = i+4*sizeof(gchar); 
+                             i = i+4*sizeof(gchar);
                          }
                         else
                           if(g_ascii_strncasecmp ((gchar*)  &pBufferRead[i],"&amp;",5* sizeof(gchar))  ==  0 )
@@ -298,15 +299,15 @@ gchar *ODTCheckFile(gchar *path_to_file, gchar *path_to_tmp_file)
                                 str = (gchar*)realloc(str, j * sizeof(gchar));
                                 str[j-1] = '&';
                                 j++;
-                                i = i+5*sizeof(gchar); 
+                                i = i+5*sizeof(gchar);
                              }
                              else
                                 {
                                   c = (gchar)pBufferRead[i]; // printf("%c", c);
                                   str = (gchar*)realloc(str, j * sizeof(gchar));
-                                  str[j-1] = c; 
+                                  str[j-1] = c;
                                   j++;  // fwrite(&c , sizeof(gchar), 1, outputFile);
-                                  i= i+sizeof(gchar);              
+                                  i= i+sizeof(gchar);
                                 }
           }/* else */
    }/* wend */
@@ -318,9 +319,9 @@ gchar *ODTCheckFile(gchar *path_to_file, gchar *path_to_tmp_file)
 
  /* close the parsed file and clean datas*/
   tmpfileToExtract = g_strdup_printf("%s", path_to_tmp_file);
-  fclose(outputFile); 
+  fclose(outputFile);
   if(str!=NULL)
-     {    
+     {
         g_free(str);
         str = NULL;
      }
@@ -334,7 +335,7 @@ gchar *ODTCheckFile(gchar *path_to_file, gchar *path_to_tmp_file)
 
 
 
-/* Doc-X files : read a supposed docx file, unzip it, check if contains the stuff for a Doc-X word file 
+/* Doc-X files : read a supposed docx file, unzip it, check if contains the stuff for a Doc-X word file
  * entry1 = path to the supposed doc-x file
  * entry 2 = path to a filename, text coded located in system TEMPDIR
 * return ; path to the Word content or NULL if not a true Doc-x file
@@ -365,20 +366,20 @@ gchar *DocXCheckFile(gchar *path_to_file, gchar *path_to_tmp_file)
           fprintf(stderr,"«%s» %d in function «%s» ,err=%d\n«%s»\n",__FILE__,__LINE__,__FUNCTION__,err,buf);
           return NULL;
         }
- 
-  nto = zip_get_num_entries(archive, ZIP_FL_UNCHANGED); 
-  
+
+  nto = zip_get_num_entries(archive, ZIP_FL_UNCHANGED);
+
   /* checking if this is really a Word archive : in this cas, the doc-x mus contain a subdirectory /word containg document.xml file  like this "word/document.xml"*/
   exist_document_xml = zip_name_locate(archive, "word/document.xml" ,0);
   if(exist_document_xml>-1)
      printf("* XML Word document present in position:%d *\n", exist_document_xml);
   else
-   {  
+   {
      printf("* Error ! %s isn't a Doc-X file ! *\n", path_to_file);
      return NULL;
    }
   /* now we must open document.xml with this index number*/
-  fpz = zip_fopen_index(archive, exist_document_xml , 0); 
+  fpz = zip_fopen_index(archive, exist_document_xml , 0);
   assert (fpz!=NULL);/* exit if somewhat wrong is happend */
 
   /* we must know the size in bytes of document.xml */
@@ -392,7 +393,7 @@ gchar *DocXCheckFile(gchar *path_to_file, gchar *path_to_tmp_file)
            }
 
   /* copy document.xml to system TEMPDIR */
-  pBufferRead = g_malloc(sbzip.size*sizeof(gchar)+1); 
+  pBufferRead = g_malloc(sbzip.size*sizeof(gchar)+1);
   assert(pBufferRead != NULL);
   /* read all datas in buffer p and extract the document.xml file from doc-x, in memory */
   if(zip_fread(fpz, pBufferRead , sbzip.size) != sbzip.size)
@@ -405,7 +406,7 @@ gchar *DocXCheckFile(gchar *path_to_file, gchar *path_to_tmp_file)
            }/* erreur */
 
   outputFile = fopen(path_to_tmp_file,"w");
- 
+
  /* parse and convert to pure text the document.xml */
 
  str = (gchar*)g_malloc(sizeof(gchar));
@@ -423,25 +424,25 @@ gchar *DocXCheckFile(gchar *path_to_file, gchar *path_to_tmp_file)
                   str = (gchar*)realloc(str, j * sizeof(gchar));
                   str[j-1] = '\n';
                   j++;
-                  i = i+6*sizeof(gchar); 
+                  i = i+6*sizeof(gchar);
                 }
              else
-                i = i+sizeof(gchar);             
+                i = i+sizeof(gchar);
             }
            while ( g_ascii_strncasecmp ((gchar*)  &pBufferRead[i],">", sizeof(gchar))  !=0);
-         i= i+sizeof(gchar); 
+         i= i+sizeof(gchar);
         }/* if */
-       else 
+       else
           {
               c = (gchar)pBufferRead[i]; // printf("%c", c);
               str = (gchar*)realloc(str, j * sizeof(gchar));
-              str[j-1] = c; 
-              j++;  
-              i= i+sizeof(gchar);              
+              str[j-1] = c;
+              j++;
+              i= i+sizeof(gchar);
           }/* else */
    }/* wend */
 
- 
+
   fwrite(str , sizeof(gchar), strlen(str), outputFile);
 
  /* close the parsed file and clean datas*/
@@ -449,7 +450,7 @@ gchar *DocXCheckFile(gchar *path_to_file, gchar *path_to_tmp_file)
   tmpfileToExtract = g_strdup_printf("%s", path_to_tmp_file);// pourquoi plantage ici ????
 
 
-  fclose(outputFile); 
+  fclose(outputFile);
 
   if(str!=NULL) /* il y a un pb sur str dans certains cas ! */
      g_free(str);
@@ -462,7 +463,7 @@ gchar *DocXCheckFile(gchar *path_to_file, gchar *path_to_tmp_file)
 
 
 /*
-/* function to convert a gchar extension type file in gint to switch 
+/* function to convert a gchar extension type file in gint to switch
 /* Luc A - 1 janv 2018 from URL = https://stackoverflow.com/questions/4014827/best-way-to-switch-on-a-string-in-c #22 post
 // please update in search.h the #define MAX_FORMAT_LIST according to the size of this table - Luc A 1 janv 2018
 */
@@ -507,10 +508,10 @@ GdkPixbuf *get_icon_for_display(gchar *stype)
  //  str_lowcase = g_ascii_strdown (stype, -1);
    i = keyfromstring(stype);/* the g_ascii_strn() function is case independant */
  //  g_free(str_lowcase);
-   str_icon_file = g_strconcat(PACKAGE_DATA_DIR, "/pixmaps/", PACKAGE, "/", 
+   str_icon_file = g_strconcat(config_PackageDataDir, "/pixmaps/", config_Package, "/",
                                lookuptable[i].icon_file_name, NULL);
    icon = gdk_pixbuf_new_from_file(str_icon_file, &error);
-  
+
    if (error)
     {
       g_warning ("Could not load icon: %s\n", error->message);
@@ -547,7 +548,7 @@ void getSearchExtras(GtkWidget *widget, searchControl *mSearchControl)
   struct tm tptr;
   gchar *endChar;
 
-   
+
   /* get current size values */
   if(moreThan!=NULL )
      tmpMoreThan = strtod(moreThan, &endChar);
@@ -606,16 +607,16 @@ void getSearchExtras(GtkWidget *widget, searchControl *mSearchControl)
   }
 /* Read file min/max size strings */
   if ((gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget(widget, "moreThanCheck")))) &&
-      (moreThan != NULL)) 
+      (moreThan != NULL))
     {
       tmpDouble = strtod(moreThan, &endChar);
-      if (tmpDouble <= 0) 
+      if (tmpDouble <= 0)
         {
            miscErrorDialog(widget, _("<b>Error!</b>\n\nMoreThan file size must be <i>positive</i> value\nSo this criteria will not be used.\n\nPlease, check your entry and the units."));
           return;
         }
       if ((gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget(widget, "lessThanCheck")))) && (tmpMoreThan >=tmpLessThan)) {
-           miscErrorDialog(widget, _("<b>Error!</b>\n\nMoreThan file size must be <i>stricly inferior</i> to LessThan file size.So this criteria will not be used.\n\nPlease, check your entry and the units."));      
+           miscErrorDialog(widget, _("<b>Error!</b>\n\nMoreThan file size must be <i>stricly inferior</i> to LessThan file size.So this criteria will not be used.\n\nPlease, check your entry and the units."));
           return;
          }
       g_ascii_formatd (buffer, MAX_FILENAME_STRING, "%1.1f", tmpDouble);
@@ -641,7 +642,7 @@ void getSearchExtras(GtkWidget *widget, searchControl *mSearchControl)
   }
 
   /* Read date strings */
-     
+
 
   if ((gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget(widget, "afterCheck")))) &&
       ((after != NULL) && (after != '\0'))) {
@@ -654,7 +655,7 @@ void getSearchExtras(GtkWidget *widget, searchControl *mSearchControl)
       gtk_entry_set_text(GTK_ENTRY(lookup_widget(widget, "afterEntry")), buffer);
     }
     setTimeFromDate(&tptr, &DateAfter);
-    mSearchControl->after = mktime(&tptr); 
+    mSearchControl->after = mktime(&tptr);
     mSearchControl->flags |= SEARCH_AFTER_SET;
   }
   if ((gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget(widget, "beforeCheck")))) &&
@@ -682,7 +683,7 @@ void getSearchExtras(GtkWidget *widget, searchControl *mSearchControl)
       return;
            }
       }
-  } 
+  }
 }
 
 /*
@@ -702,7 +703,7 @@ void getSearchCriteria(GtkWidget *widget, searchControl *mSearchControl)
     mSearchControl->textSearchRegEx = (gchar *)gtk_combo_box_text_get_active_text (GTK_COMBO_BOX_TEXT(lookup_widget(widget, "containingText2")));
     mSearchControl->fileSearchRegEx = (gchar *)gtk_combo_box_text_get_active_text (GTK_COMBO_BOX_TEXT(lookup_widget(widget, "fileName2")));
     mSearchControl->startingFolder = comboBoxReadCleanFolderName(GTK_COMBO_BOX(lookup_widget(widget, "lookIn2")));
-  }  
+  }
 }
 
 /*
@@ -737,13 +738,13 @@ void getSearchFlags(GtkWidget *widget, searchControl *mSearchControl)
   /* Store the common options */
   if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget(widget, "notExpressionCheckFile")))) {
       mSearchControl->flags |= SEARCH_INVERT_FILES; /* Invert the search on File names e.g. find everything but abc */
-  }  
+  }
   if (!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget(widget, "matchCaseCheckFile")))) {
     mSearchControl->fileSearchFlags |= REG_ICASE;
-  }  
+  }
   if (!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget(widget, "ignoreHiddenFiles")))) {
       mSearchControl->flags |= SEARCH_HIDDEN_FILES; /* Allow hidden searching */
-  }  
+  }
   mSearchControl->fileSearchFlags |= REG_NOSUB;
   if (!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget(widget, "matchCaseCheckContents")))) {
     mSearchControl->textSearchFlags |= REG_ICASE;
@@ -785,7 +786,7 @@ void start_search_thread(GtkWidget *widget)
   GtkTreeView *listView;
   GtkListStore *sortedModel;
 
-  
+
   /* Clear results prior to resetting data */
   if (getResultsViewHorizontal(widget)) {
     listView = GTK_TREE_VIEW(lookup_widget(widget, "treeview1"));
@@ -798,11 +799,11 @@ void start_search_thread(GtkWidget *widget)
 
   /* Create user data storage & control (automatic garbage collection) */
   createSearchData(window1, MASTER_SEARCH_DATA);
-  createSearchControl(window1, MASTER_SEARCH_CONTROL);  
- 
+  createSearchControl(window1, MASTER_SEARCH_CONTROL);
+
   mSearchControl = g_object_get_data(window1, MASTER_SEARCH_CONTROL);
   mSearchControl->cancelSearch = FALSE; /* reset cancel signal */
-  
+
   /* Store the form data within mSearchControl */
   mSearchControl->widget = GTK_WIDGET(window1); /* Store pointer to the main windows */
   getSearchCriteria(widget, mSearchControl); /* Store the user entered criteria */
@@ -822,7 +823,7 @@ void start_search_thread(GtkWidget *widget)
     gtk_widget_destroy (dialog);
     return;
   }
-  
+
   if (!g_file_test(mSearchControl->startingFolder, G_FILE_TEST_IS_DIR)) {
     dialog = gtk_message_dialog_new (GTK_WINDOW(window1),
                                      GTK_DIALOG_DESTROY_WITH_PARENT,
@@ -860,8 +861,8 @@ void start_search_thread(GtkWidget *widget)
   /* modifiy windows' title according to research criteria */
   gtk_window_set_title (GTK_WINDOW(window1), g_strdup_printf(_("Searchmonkey : search in %s/"), mSearchControl->startingFolder));/* Luc A - janv 2018 */
   /* create the search thread */
-  g_thread_create (walkDirectories, window1, FALSE, NULL); 
-  //  threadId = g_thread_create (walkDirectories, window1, FALSE, NULL); 
+  g_thread_create (walkDirectories, window1, FALSE, NULL);
+  //  threadId = g_thread_create (walkDirectories, window1, FALSE, NULL);
 }
 
 
@@ -872,7 +873,7 @@ void stop_search_thread(GtkWidget *widget)
 {
   searchControl *mSearchControl;
   GObject *window1 = G_OBJECT(lookup_widget(widget, "window1"));
-  
+
   mSearchControl = g_object_get_data(window1, MASTER_SEARCH_CONTROL);
 
   g_static_mutex_lock(&mutex_Control);
@@ -889,7 +890,7 @@ void stop_search_thread(GtkWidget *widget)
 /*
  * POSIX thread entry point for main search loop.
  * This function takes pointer to main application window.
- * Returns 0 on sucess (always). 
+ * Returns 0 on sucess (always).
  */
 void *walkDirectories(void *args)
 {
@@ -899,7 +900,7 @@ void *walkDirectories(void *args)
   statusbarData *status; /* Master status bar */
   glong matchCount;
   GtkTreeView *listView;
-  GtkTextView *textView; 
+  GtkTextView *textView;
   GtkListStore *sortedModel;
   GtkTextBuffer *textBuffer;
 
@@ -926,8 +927,8 @@ void *walkDirectories(void *args)
   gtk_widget_set_sensitive(lookup_widget(mSearchControl->widget, "saveResults"), FALSE);
   gtk_widget_set_sensitive(lookup_widget(mSearchControl->widget, "save_results1"), FALSE);
   gdk_threads_leave ();
-  
-  
+
+
   if (getResultsViewHorizontal(mSearchControl->widget)) {
     listView = GTK_TREE_VIEW(lookup_widget(mSearchControl->widget, "treeview1"));
     textView = GTK_TEXT_VIEW(lookup_widget(mSearchControl->widget, "textview1"));
@@ -945,13 +946,13 @@ void *walkDirectories(void *args)
 
   if (matchCount > 0) {
     gboolean phasetwo;
-    
+
     g_static_mutex_lock(&mutex_Control);
     phasetwo = ((mSearchControl->cancelSearch == FALSE) && ((mSearchControl->flags & SEARCH_TEXT_CONTEXT) != 0));
     g_static_mutex_unlock(&mutex_Control);
 
     if (phasetwo) {
-      matchCount = phaseTwoSearch(mSearchControl, mSearchData, status); 
+      matchCount = phaseTwoSearch(mSearchControl, mSearchData, status);
     }
   }
   updateStatusFilesFound(matchCount, status, mSearchControl);
@@ -969,7 +970,7 @@ void *walkDirectories(void *args)
       gtk_widget_set_sensitive(lookup_widget(mSearchControl->widget, "save_results1"), TRUE);
   }
   gdk_threads_leave ();
-  
+
   g_static_mutex_unlock(&mutex_Data);
   g_thread_exit (GINT_TO_POINTER(0));
 }
@@ -1013,11 +1014,11 @@ glong phaseOneSearch(searchControl *mSearchControl, searchData *mSearchData, sta
       searchGlob = g_pattern_spec_new(g_utf8_strdown(mSearchControl->fileSearchRegEx, -1));
     }
   }
-    
+
   /* Initialise stacks */
   curDirStack = g_ptr_array_new();
-  scanDirStack = g_ptr_array_new(); 
- 
+  scanDirStack = g_ptr_array_new();
+
   /* Copy base directory out */
   pStrChunk = g_string_chunk_insert_const(mSearchData->locationChunk, mSearchControl->startingFolder);
   g_ptr_array_add(curDirStack, pStrChunk);
@@ -1029,14 +1030,14 @@ glong phaseOneSearch(searchControl *mSearchControl, searchData *mSearchData, sta
                      g_string_chunk_insert(status->statusbarChunk, status->constantString));
   gdk_threads_leave ();
 
-  
+
   g_static_mutex_lock(&mutex_Control);
   stopSearch = mSearchControl->cancelSearch;
   g_static_mutex_unlock(&mutex_Control);
 
   while ((curDirStack->len > 0) && (stopSearch == FALSE)) {
-    if (((mSearchControl->flags & SEARCH_TEXT_CONTEXT) == 0) && 
-         ((mSearchControl->flags & LIMIT_RESULTS_SET) != 0) && 
+    if (((mSearchControl->flags & SEARCH_TEXT_CONTEXT) == 0) &&
+         ((mSearchControl->flags & LIMIT_RESULTS_SET) != 0) &&
 	   (matchCount == mSearchControl->limitResults)) {
       break;
     }
@@ -1065,11 +1066,11 @@ glong phaseOneSearch(searchControl *mSearchControl, searchData *mSearchData, sta
         gdk_threads_leave ();
       }
     }
-    
+
     /* Get next file from the current scan directory */
     tmpFileName = g_strdup(g_dir_read_name(GET_LAST_PTR(scanDirStack)));
     if (tmpFileName == NULL) {
-      
+
       gdk_threads_enter ();
       gtk_statusbar_pop(statusbar, STATUSBAR_CONTEXT_ID(statusbar));
       gdk_threads_leave ();
@@ -1102,7 +1103,7 @@ glong phaseOneSearch(searchControl *mSearchControl, searchData *mSearchData, sta
         continue;
       }
     }
-      
+
     /* Check for hidden files (unless overriden by user) */
     if ((mSearchControl->flags & SEARCH_HIDDEN_FILES) == 0) {
       if (*tmpFileName == '.') {
@@ -1111,10 +1112,10 @@ glong phaseOneSearch(searchControl *mSearchControl, searchData *mSearchData, sta
         continue;
       }
     }
-    
+
     /* Start working with the new folder name */
     if (g_file_test(tmpFullFileName, G_FILE_TEST_IS_DIR)) {
-      if (((mSearchControl->flags & SEARCH_SUB_DIRECTORIES) != 0) && 
+      if (((mSearchControl->flags & SEARCH_SUB_DIRECTORIES) != 0) &&
           (((mSearchControl->flags & DEPTH_RESTRICT_SET) == 0) ||
            (mSearchControl->folderDepth > (curDirStack->len -1)))) {
         g_snprintf(status->constantString, MAX_FILENAME_STRING, _("Phase 1 searching %s"), tmpFullFileName);
@@ -1134,7 +1135,7 @@ glong phaseOneSearch(searchControl *mSearchControl, searchData *mSearchData, sta
       }
     } else { /* Otherwise, a filename has been found */
       if (mSearchControl->fileSearchIsRegEx) {
-        
+
         result = regexec(&searchRegEx, tmpFileName, 0, NULL, 0);
       } else {
         gchar * tmpMatchString;
@@ -1157,7 +1158,7 @@ glong phaseOneSearch(searchControl *mSearchControl, searchData *mSearchData, sta
           g_ptr_array_add(mSearchData->fileNameArray, g_strdup(tmpFileName));
           g_ptr_array_add(mSearchData->pLocationArray, GET_LAST_PTR(curDirStack));
           matchCount ++;
-          if ((mSearchControl->flags & SEARCH_TEXT_CONTEXT) == 0) { 
+          if ((mSearchControl->flags & SEARCH_TEXT_CONTEXT) == 0) {
             displayQuickMatch(mSearchControl, mSearchData);
           }
         }
@@ -1185,7 +1186,7 @@ glong phaseOneSearch(searchControl *mSearchControl, searchData *mSearchData, sta
   gdk_threads_enter ();
   gtk_progress_bar_set_fraction(pbar, 0);
   gdk_threads_leave ();
-  
+
 
   /* Clean up memory bar now! */
   g_ptr_array_free(curDirStack, TRUE);
@@ -1226,18 +1227,18 @@ glong phaseTwoSearch(searchControl *mSearchControl, searchData *mSearchData, sta
   gboolean fIsOffice=FALSE; /* flag if we found an office style file */
 
 
-  
-  if (mSearchData->fullNameArray->len > 100) 
+
+  if (mSearchData->fullNameArray->len > 100)
     {
      pbarNudge = ((gdouble)mSearchData->fullNameArray->len / 100);  /* Every pbarNudge - increment 1/100 */
      pbarIncrement = (gdouble)pbarNudge / (gdouble)mSearchData->fullNameArray->len;
-    } 
-    else 
+    }
+    else
       {
         pbarNudge = 1; /* For every file, increment 1/MAX*/
         pbarIncrement = 1 / (gboolean)mSearchData->fullNameArray->len;
       }/* endif */
-  
+
   /* Update the status bar */
   g_snprintf(status->constantString, MAX_FILENAME_STRING, _("Phase 2 starting..."));
   gdk_threads_enter ();
@@ -1248,22 +1249,22 @@ glong phaseTwoSearch(searchControl *mSearchControl, searchData *mSearchData, sta
 
   /* Compile the regular expression */
   regcomp(&search, mSearchControl->textSearchRegEx, mSearchControl->textSearchFlags);
-  
+
   gdk_threads_enter ();
   gtk_progress_bar_set_fraction(pbar, 0);
   gdk_threads_leave ();
 
   /* Loop through all files, and get all of the matches from each */
-  for (i=0; i<(mSearchData->fullNameArray->len); i++) 
+  for (i=0; i<(mSearchData->fullNameArray->len); i++)
     {
-      if (((mSearchControl->flags & LIMIT_RESULTS_SET) != 0) && (matchCount == mSearchControl->limitResults)) 
+      if (((mSearchControl->flags & LIMIT_RESULTS_SET) != 0) && (matchCount == mSearchControl->limitResults))
         {
          // printf("* phase 2 : je sors de la boucle à maxcount =%d *\n", matchCount);
          break;
         }/* endif */
 
       /* Increment progress bar whenever pbarNudge files have been searched */
-      if (((i+1) % pbarNudge) == 0) 
+      if (((i+1) % pbarNudge) == 0)
        {
         g_sprintf(pbarNudgeCountText, "%.0f%%", pbarNudgeCount * 100);
         gdk_threads_enter ();
@@ -1272,13 +1273,13 @@ glong phaseTwoSearch(searchControl *mSearchControl, searchData *mSearchData, sta
         gdk_threads_leave ();
         pbarNudgeCount += pbarIncrement;
        }/* endif */
-    
+
     tmpFileName = g_strdup_printf("%s", (gchar*)g_ptr_array_index(mSearchData->fullNameArray, i) );/* modifyed Luc A janv 2018 */
-    /* We must check the type-file in order to manage non pure text files like Office files 
+    /* We must check the type-file in order to manage non pure text files like Office files
        Luc A. 7 janv 2018 */
  //   printf("* Phase 2 : je teste le fichier :%s\n", tmpFileName);
 
-// !!!! pnser à mettre une fonction qui renvoit un code et après faire un switch(code) 
+// !!!! pnser à mettre une fonction qui renvoit un code et après faire un switch(code)
 
    /* DOCX from MSWord 2007 and newer ? */
     if( g_ascii_strncasecmp (&tmpFileName[strlen(tmpFileName)-4],"docx", 4)  == 0  )
@@ -1293,14 +1294,14 @@ glong phaseTwoSearch(searchControl *mSearchControl, searchData *mSearchData, sta
    /* OPenDocument Text ? */
    if( g_ascii_strncasecmp (&tmpFileName[strlen(tmpFileName)-3],"odt", 3)  == 0  )
      {
-       /* thus we must change the location of tmpFileName : 
-         we unzip the original, and get a new location (in TMPDIR) 
+       /* thus we must change the location of tmpFileName :
+         we unzip the original, and get a new location (in TMPDIR)
          to a plain text file extracted from the ODT */
        tmpExtractedFile = ODTCheckFile((gchar*)tmpFileName,  GetTempFileName("monkey")  );
        if(tmpExtractedFile!=NULL)
           {
            // printf("No problemo ODT :%s \n", tmpExtractedFile);
-           /* now, we swap the current 'searchmonkey' mode for filename to the parsed pure text produced by the above function 
+           /* now, we swap the current 'searchmonkey' mode for filename to the parsed pure text produced by the above function
             It's for this reason that I've changed Adam's code, where Adam only swapped pointers */
            fDeepSearch = TRUE;
            fIsOffice = TRUE;
@@ -1337,7 +1338,7 @@ glong phaseTwoSearch(searchControl *mSearchControl, searchData *mSearchData, sta
     gtk_statusbar_push(statusbar, STATUSBAR_CONTEXT_ID(statusbar),
                        status->constantString);
     gdk_threads_leave ();
-    
+
     /* Open file (if valid) */
     /* i's a wrapper for Glib's g_file_get_contents() */
     /* in 'contents" string variable we have the content read from file */
@@ -1345,7 +1346,7 @@ glong phaseTwoSearch(searchControl *mSearchControl, searchData *mSearchData, sta
       /* Try to get a match line 954*/
 
       if (getAllMatches(mSearchData, contents, length, &search, fIsOffice)) {
-        
+
         /* get full filename pointer */
         newMatch = GET_LAST_PTR(mSearchData->textMatchArray);
         newMatch->pFullName = g_ptr_array_index(mSearchData->fullNameArray, i);
@@ -1354,17 +1355,17 @@ glong phaseTwoSearch(searchControl *mSearchControl, searchData *mSearchData, sta
         // newMatch->fileSize = length;/* be careful for Office Files */
         getFileSize(mSearchData, newMatch);/* added by Luc A feb 2018 */
 
-        getLength(mSearchData, newMatch);      
+        getLength(mSearchData, newMatch);
         getFileType(mSearchData, newMatch);
         getModified(mSearchData, newMatch);
-        
+
         /* Convert the absolutes to relatives */
         spinButtonValue = mSearchControl->numExtraLines;
         dereferenceAbsolutes(mSearchData, contents, length, spinButtonValue);
 
         /* Display the matched string */
         displayMatch(mSearchControl, mSearchData);/* function is line 1765*/
-        
+
         /* Increment the match counter */
         matchCount++;
       }
@@ -1404,7 +1405,7 @@ gboolean symLinkReplace(gchar **pFullFileName, gchar **pFileName)
   gchar ** tmpSymSplit = g_strsplit(tmpSymFullFileName, G_DIR_SEPARATOR_S, -1);
   guint splitLength = g_strv_length(tmpSymSplit);
   gboolean retVal = FALSE;
-  
+
   /* If symlink splits into 1 or more parts, replace filename(s) with new symbolic link details */
   if (splitLength != 0) {
     g_free(*pFullFileName);
@@ -1423,18 +1424,18 @@ gboolean symLinkReplace(gchar **pFullFileName, gchar **pFileName)
 /*
  * POSIX threaded: phase two helper function.
  * Searches through complete text looking for regular expression matches.
- * contents = gchar buffer with all text in the file open 
+ * contents = gchar buffer with all text in the file open
  * Returns TRUE if >1 match found.
  */
 gboolean getAllMatches(searchData *mSearchData, gchar *contents, gsize length, regex_t *search, gboolean fOffice /*, gint index*/ )
 {
   regmatch_t subMatches[MAX_SUB_MATCHES];
   gint tmpConOffset = 0;
-  
+
   gchar *tmpCon;
   lineMatch *newLineMatch = NULL;
   textMatch *newTextMatch = NULL;
-  
+
   tmpCon = contents;
 
   /* Loop through getting all of the absolute match positions */
@@ -1442,7 +1443,7 @@ gboolean getAllMatches(searchData *mSearchData, gchar *contents, gsize length, r
     if ((subMatches[0].rm_so == 0) && (subMatches[0].rm_eo == 0)) {
       break;
     }
-    
+
     if (newTextMatch == NULL) {
       newTextMatch = g_malloc(sizeof(textMatch));
       newTextMatch->matchIndex = mSearchData->lineMatchArray->len; /* pre-empt new line being added */
@@ -1461,7 +1462,7 @@ gboolean getAllMatches(searchData *mSearchData, gchar *contents, gsize length, r
     newLineMatch->invMatchIndex = (mSearchData->textMatchArray->len - 1); /* create reverse pointer */
     g_ptr_array_add(mSearchData->lineMatchArray, newLineMatch);
     (newTextMatch->matchCount) ++;
-    
+
     tmpCon += subMatches[0].rm_eo;
     tmpConOffset += subMatches[0].rm_eo;
 
@@ -1474,7 +1475,7 @@ gboolean getAllMatches(searchData *mSearchData, gchar *contents, gsize length, r
     return FALSE;
   }
   return TRUE;
-  
+
 }
 
 
@@ -1505,21 +1506,21 @@ void dereferenceAbsolutes(searchData *mSearchData, gchar *contents, gsize length
   gchar* displayEndPtr = NULL;
 
   /* Loop through whole file contents, one char at a time */
-  while (currentOffset < length) { 
+  while (currentOffset < length) {
 
     /* Detect match start offset found - record localised stats */
     if (currentOffset == absMatchStart) {
       newLineMatch->offsetStart = (lineOffset - 1);
       newLineMatch->lineNum = (lineCount + 1);
     }
-    
+
     /* Detect match end offset found - record localised stats */
     if (currentOffset == absMatchEnd) {
       newLineMatch->offsetEnd = (lineOffset - 1);
       newLineMatch->lineCount = ((lineCount - newLineMatch->lineNum) + 2);
       needLineEndNumber = TRUE;
     }
-    
+
     if ((*tmpCon == '\n') || (*tmpCon == '\r') || (currentOffset >= (length - 1))) {
       if (needLineEndNumber) {
         newLineMatch->lineLen = lineOffset;
@@ -1572,24 +1573,24 @@ void dereferenceAbsolutes(searchData *mSearchData, gchar *contents, gsize length
                                          (textMatch->matchIndex + currentMatch)); /* Move pointer on one! */
         absMatchStart = newLineMatch->offsetStart;
         absMatchEnd = newLineMatch->offsetEnd;
-        
+
         /* If next match is on that same line -- rewind the pointers */
         if (absMatchStart <= currentOffset) {
           currentOffset -= prevLineMatch->lineLen;
-          tmpCon -= prevLineMatch->lineLen;          
+          tmpCon -= prevLineMatch->lineLen;
           lineCount -= prevLineMatch->lineCount;
         }
-        
+
 
         needLineEndNumber = FALSE;
-            
+
       }
       lineCount ++;
       lineOffset = 0;
       lineStart = currentOffset;
       lineStartPtr = (tmpCon + 1); /* First charactor after the newline */
     }
-    
+
     tmpCon ++;
     lineOffset++;
     currentOffset ++;
@@ -1629,16 +1630,16 @@ void getFileType(searchData *mSearchData, textMatch *newMatch)
   textMatch *textMatch = GET_LAST_PTR(mSearchData->textMatchArray);
   gchar *tmpChar = textMatch->pFileName;
   gchar *tmpString = NULL;
-  
+
   /* Find end of string */
   while (*tmpChar != '\0') {
     tmpChar ++;
   }
-  
+
   /* Find string extension */
   while (tmpChar > textMatch->pFileName) {
     tmpChar --;
-    if (*tmpChar == '.') { 
+    if (*tmpChar == '.') {
       tmpChar++;
       tmpString = g_strdup_printf (_("%s-type"), tmpChar);
       newMatch->pFileType = (g_string_chunk_insert_const(mSearchData->fileTypeChunk, tmpString));
@@ -1647,7 +1648,7 @@ void getFileType(searchData *mSearchData, textMatch *newMatch)
     } else {
       if (!g_ascii_isalnum(*tmpChar) && (*tmpChar != '~')) {
         break; /* Unexpected type - set to unknown */
-      } 
+      }
     }
   }
   newMatch->pFileType = (g_string_chunk_insert_const(mSearchData->fileTypeChunk, _("Unknown")));
@@ -1665,7 +1666,7 @@ void getModified(searchData *mSearchData, textMatch *newMatch)
   gchar *tmpString;
   char buffer[80];/* added by Luc A., 27/12/2017 */
   textMatch *textMatch = GET_LAST_PTR(mSearchData->textMatchArray);
-  
+
   lstat(textMatch->pFullName, &buf); /* Replaces the buggy GLIB equivalent */
   /* added by Luc A., 27 dec 2017 */
   strftime(buffer, 80, "%Ec", localtime(&(buf.st_mtime)));
@@ -1676,7 +1677,7 @@ void getModified(searchData *mSearchData, textMatch *newMatch)
   if (tmpString[stringSize - 1] == '\n') {
     tmpString[stringSize - 1] = '\0';
   }
-  
+
   newMatch->mDate = buf.st_mtime;
   newMatch->pMDate = (g_string_chunk_insert_const(mSearchData->mDateChunk, tmpString));
   g_free(tmpString);
@@ -1715,7 +1716,7 @@ void updateStatusFilesFound(const gsize matchCount, statusbarData *status, searc
   if ((mSearchControl->flags & SEARCH_INVERT_FILES) != 0) {
     g_strlcat(status->constantString, _(" [inv]"), MAX_FILENAME_STRING);
   }
-  
+
   g_static_mutex_lock(&mutex_Control);
   stopSearch = mSearchControl->cancelSearch;
   g_static_mutex_unlock(&mutex_Control);
@@ -1726,10 +1727,10 @@ void updateStatusFilesFound(const gsize matchCount, statusbarData *status, searc
   if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (lookup_widget(mSearchControl->widget, "dosExpressionRadioFile"))))
     {
         g_strlcat(status->constantString, _("-research mode with jokers(DOS like)"), MAX_FILENAME_STRING);
-       
+
     }
   else g_strlcat(status->constantString, _("-research mode with RegEx"), MAX_FILENAME_STRING);
-   
+
   gtk_statusbar_pop(statusbar, STATUSBAR_CONTEXT_ID(statusbar));
   gtk_statusbar_push(statusbar, STATUSBAR_CONTEXT_ID(statusbar),
                      status->constantString);
@@ -1745,35 +1746,35 @@ void updateStatusFilesFound(const gsize matchCount, statusbarData *status, searc
 gboolean statMatchPhase(const gchar *tmpFullFileName, searchControl *mSearchControl)
 {
   struct stat buf;
-    
+
   if ((mSearchControl->flags & SEARCH_SKIP_LINK_FILES) == 0) {
     stat(tmpFullFileName, &buf);
   } else {
     lstat(tmpFullFileName, &buf);
   }
-  
+
   if ((mSearchControl->flags & SEARCH_MORETHAN_SET) != 0) {
       if (buf.st_size <= mSearchControl->moreThan) {
           return FALSE;
-      }      
+      }
   }
-  
+
   if ((mSearchControl->flags & SEARCH_LESSTHAN_SET) != 0) {
       if (buf.st_size >= mSearchControl->lessThan) {
           return FALSE;
-      }      
+      }
   }
-  
+
   if ((mSearchControl->flags & SEARCH_AFTER_SET) != 0) {
       if (difftime(buf.st_mtime, mSearchControl->after) <=0) {
           return FALSE;
       }
   }
-  
+
   if ((mSearchControl->flags & SEARCH_BEFORE_SET) != 0) {
       if (difftime(mSearchControl->before, buf.st_mtime) <=0) {
           return FALSE;
-      }      
+      }
   }
   return TRUE;
 }
@@ -1830,12 +1831,12 @@ void displayQuickMatch(searchControl *mSearchControl, searchData *mSearchData)
   newMatch->pFullName = GET_LAST_PTR(mSearchData->fullNameArray);
   newMatch->pFileName = GET_LAST_PTR(mSearchData->fileNameArray);
   newMatch->pLocation = GET_LAST_PTR(mSearchData->pLocationArray);
-  
+
   getModified(mSearchData, newMatch);
   getFileType(mSearchData, newMatch);
   getFileSize(mSearchData, newMatch);
   getLength(mSearchData, newMatch);
-  
+
   pixbuf = get_icon_for_display(newMatch->pFileType);
   gdk_threads_enter ();
   g_assert(mSearchData->store != NULL);
@@ -1854,7 +1855,7 @@ void displayQuickMatch(searchControl *mSearchControl, searchData *mSearchData)
                       TYPE_COLUMN, newMatch->pFileType,
                       MATCHES_COUNT_STRING_COLUMN, tmpStr,
                       -1);
-  if (pixbuf!=NULL) 
+  if (pixbuf!=NULL)
       g_object_unref(G_OBJECT(pixbuf));
   gdk_threads_leave ();
   return;
@@ -1888,16 +1889,16 @@ void setTimeFromDate(struct tm *tptr, GDate *date)
 void createSearchData(GObject *object, const gchar *dataName)
 {
   searchData *mSearchData;
-  
+
   /* Create pointer arrays */
   mSearchData = g_malloc(sizeof(searchData));
-  
+
   mSearchData->pLocationArray = g_ptr_array_new(); /* Only pointers to baseDirArray */
   mSearchData->textMatchArray = g_ptr_array_new();
   mSearchData->fileNameArray = g_ptr_array_new();
   mSearchData->fullNameArray = g_ptr_array_new();
   mSearchData->lineMatchArray = g_ptr_array_new();
-  
+
   /* Create string chunks */
   mSearchData->locationChunk = g_string_chunk_new(MAX_FILENAME_STRING + 1);
   mSearchData->fileSizeChunk = g_string_chunk_new(MAX_FILENAME_STRING + 1);
@@ -1907,7 +1908,7 @@ void createSearchData(GObject *object, const gchar *dataName)
 
 //  mSearchData->store = NULL;
   mSearchData->iter = g_malloc(sizeof(GtkTreeIter));
-  
+
   /* Attach the data to the G_OBJECT */
   g_object_set_data_full(object, dataName, mSearchData, destroySearchData);
 }
@@ -1923,7 +1924,7 @@ void destroySearchData(gpointer data)
   searchData *mSearchData = data;
 
   g_free(mSearchData->iter);
-  
+
   /* Destroy string chunks */
   g_string_chunk_free(mSearchData->locationChunk);
   g_string_chunk_free(mSearchData->fileSizeChunk);
@@ -1938,7 +1939,7 @@ void destroySearchData(gpointer data)
   g_ptr_array_foreach(mSearchData->lineMatchArray, ptr_array_free_cb, NULL);
 
   /* Destroy pointer arrays, plus malloc'ed arrays */
-  g_ptr_array_free(mSearchData->pLocationArray, TRUE); 
+  g_ptr_array_free(mSearchData->pLocationArray, TRUE);
   g_ptr_array_free(mSearchData->textMatchArray, TRUE);
   g_ptr_array_free(mSearchData->fileNameArray, TRUE);
   g_ptr_array_free(mSearchData->fullNameArray, TRUE);

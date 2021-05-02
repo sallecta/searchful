@@ -1,6 +1,4 @@
-#ifdef HAVE_CONFIG_H
-#  include <config.h>
-#endif
+#include "0config.h"
 
 #include <gtk/gtk.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
@@ -100,7 +98,7 @@ on_word_wrap1_activate                 (GtkMenuItem     *menuitem,
     } else {
       textBox = GTK_TEXT_VIEW(lookup_widget(GTK_WIDGET(menuitem), "textview4"));
     }
-    
+
     setWordWrap = gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(menuitem));
     if(setWordWrap)
         gtk_text_view_set_wrap_mode(textBox, GTK_WRAP_WORD);
@@ -120,16 +118,16 @@ on_set_font1_activate                  (GtkMenuItem     *menuitem,
     } else {
       textView = lookup_widget(GTK_WIDGET(menuitem), "textview4");
     }
-    
+
     GtkFontSelectionDialog *dialog = GTK_FONT_SELECTION_DIALOG(create_fontSelectionDialog());
     PangoContext* context = gtk_widget_get_pango_context  (textView);
-    PangoFontDescription *desc = pango_context_get_font_description(context);    
+    PangoFontDescription *desc = pango_context_get_font_description(context);
     newFont = pango_font_description_to_string(desc);
-    
+
     gtk_font_selection_dialog_set_font_name(dialog, newFont);
     if (gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_OK) {
       newFont = gtk_font_selection_dialog_get_font_name(dialog);
-      if (newFont != NULL) { 
+      if (newFont != NULL) {
         desc = pango_font_description_from_string (newFont);
         if (desc != NULL) {
           gtk_widget_modify_font (GTK_WIDGET(textView), desc);
@@ -165,7 +163,7 @@ on_set_highligting_colour1_activate    (GtkMenuItem     *menuitem,
     g_assert(tag != NULL);
     g_assert(dialog != NULL);
     g_assert(colorsel != NULL);
-    
+
     g_object_get( G_OBJECT(tag), "background-gdk", &cp, NULL);
     gtk_color_selection_set_current_color(colorsel, cp);
     gdk_color_free(cp);
@@ -405,10 +403,10 @@ on_about1_activate                     (GtkMenuItem     *menuitem,
   gchar *tmpString;
   PangoAttrList *list;
   PangoAttribute *attr;
-  
+
   /* Set searchmonkey version text and font size */
   tmpWidget = lookup_widget(aboutDialog, "aboutVersion");
-  tmpString = g_strdup_printf(_("searchmonkey %s"), VERSION);/* defined in "configure" line 1644 - luc A 3 janv 2018 */
+  tmpString = g_strdup_printf(_("searchmonkey %s"), config_Version);/* defined in "configure" line 1644 - luc A 3 janv 2018 */
   gtk_label_set_text(GTK_LABEL(tmpWidget), tmpString);
   g_free(tmpString);
   list = pango_attr_list_new(); /* Create list with 1 reference */
@@ -475,14 +473,14 @@ on_folderSelector_clicked              (GtkButton       *button,
   GtkComboBox *fileWidget;
   gint result;
   gchar *currentFolderName = gtk_combo_box_text_get_active_text (GTK_COMBO_BOX_TEXT(lookup_widget(GTK_WIDGET(button), "lookIn")));
-  
+
   dialog = create_folderChooserDialog();
   gtk_file_chooser_set_current_folder(GTK_FILE_CHOOSER(dialog), currentFolderName);
   g_free(currentFolderName);
 
   if (gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_OK) {
     gchar *filename;
-    
+
     filename = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (dialog));
     if (getExpertSearchMode(GTK_WIDGET(button)) == TRUE) {
     	fileWidget = GTK_COMBO_BOX(lookup_widget(GTK_WIDGET(button), "lookIn"));
@@ -563,31 +561,31 @@ on_treeview1_button_press_event        (GtkWidget       *widget,
   if(selection==NULL)
      return FALSE;
   /* Capture right button click */
-  if ((event->button == 3) && (event->type == GDK_BUTTON_PRESS) && (gtk_tree_selection_count_selected_rows(selection)==1 ) ) 
+  if ((event->button == 3) && (event->type == GDK_BUTTON_PRESS) && (gtk_tree_selection_count_selected_rows(selection)==1 ) )
    {
     if (gtk_tree_view_get_path_at_pos (treeview,
                                        event->x, event->y,
-                                       &path, NULL, NULL, NULL)) 
+                                       &path, NULL, NULL, NULL))
      {
        // gtk_tree_selection_unselect_all(selection); /* added by Luc A., 28 dec 2017 */
        gtk_tree_selection_select_path (selection, path);
-       if (path!=NULL) 
+       if (path!=NULL)
          {
           gtk_tree_path_free(path);
          }/* if path!=NULL */
        do_popup_menu(widget, event);
        return TRUE;
-     }/* if test path at pos OK */   
+     }/* if test path at pos OK */
     else return FALSE;
-   }/* endif right-click */ 
+   }/* endif right-click */
 /* capture double-click */
- if ((event->button == 1) && (event->type == GDK_2BUTTON_PRESS) && (gtk_tree_selection_count_selected_rows(selection)==1 )) 
+ if ((event->button == 1) && (event->type == GDK_2BUTTON_PRESS) && (gtk_tree_selection_count_selected_rows(selection)==1 ))
    {
      if (gtk_tree_view_get_path_at_pos (treeview,event->x, event->y,
-                                    &path, NULL, NULL, NULL)) 
+                                    &path, NULL, NULL, NULL))
       {
           gchar *fullFileName = getFullFileName(treeview, FULL_FILENAME_COLUMN);
-          if (fullFileName != NULL) 
+          if (fullFileName != NULL)
             {
               SMsyscall(fullFileName, TEXTEDITOR_LIST);
               g_free(fullFileName);
@@ -595,23 +593,23 @@ on_treeview1_button_press_event        (GtkWidget       *widget,
           return TRUE;
       }/* endif at pos */
     }/* endif double-click */
-   
+
 /* capture simple-left-click, i.e. select a row */
- if ((event->button == 1) && (event->type == GDK_BUTTON_PRESS)  && (gtk_tree_selection_count_selected_rows(selection)==1 )) 
+ if ((event->button == 1) && (event->type == GDK_BUTTON_PRESS)  && (gtk_tree_selection_count_selected_rows(selection)==1 ))
    {
      if (gtk_tree_view_get_path_at_pos (treeview,event->x, event->y,
-                                    &path, NULL, NULL, NULL)) 
+                                    &path, NULL, NULL, NULL))
       {
             gtk_tree_selection_unselect_all(selection); /* ajout */
             if (gtk_tree_selection_count_selected_rows(selection)==1)
              {
                gtk_tree_selection_select_path (selection, path);
-               if (path!=NULL) 
+               if (path!=NULL)
                 {
 		 // printf("* avant libère mémoire *\n");
                  gtk_tree_path_free(path);
                  // printf("* après libère mémoire *\n");
-                }    
+                }
               return TRUE;
              }
       }
@@ -635,7 +633,7 @@ on_open1_activate                      (GtkMenuItem     *menuitem,
 {
   GtkTreeView *treeView;
   gchar *fullFileName;
-  
+
   if (getResultsViewHorizontal(GTK_WIDGET(menuitem))) {
     treeView = GTK_TREE_VIEW(lookup_widget(GTK_WIDGET(menuitem), "treeview1"));
   } else {
@@ -647,7 +645,7 @@ on_open1_activate                      (GtkMenuItem     *menuitem,
     SMsyscall(fullFileName, TEXTEDITOR_LIST);
     g_free(fullFileName);
   }
-  
+
   detachMenu(menuitem);
 }
 
@@ -657,7 +655,7 @@ on_copy3_activate                      (GtkMenuItem     *menuitem,
                                         gpointer         user_data)
 {
   copyFile(GTK_WIDGET(menuitem));
-    
+
   detachMenu(menuitem);
 }
 
@@ -677,7 +675,7 @@ on_explore1_activate                   (GtkMenuItem     *menuitem,
 {
   GtkTreeView *treeView;
   gchar *location;
-  
+
   if (getResultsViewHorizontal(GTK_WIDGET(menuitem))) {
     treeView = GTK_TREE_VIEW(lookup_widget(GTK_WIDGET(menuitem), "treeview1"));
   } else {
@@ -689,7 +687,7 @@ on_explore1_activate                   (GtkMenuItem     *menuitem,
     SMsyscall(location, FILEEXPLORER_LIST);
     g_free(location);
   }
-  
+
   detachMenu(menuitem);
 }
 
@@ -725,7 +723,7 @@ on_SampleTextView_realize              (GtkWidget       *widget,
 {
   GtkTextBuffer *buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW(widget));
   GtkTextTag *tag;
-  
+
   tag = gtk_text_buffer_create_tag (buffer, "word_highlight",
                                     "foreground", "black","background", "lightBlue",
                                     NULL);
@@ -746,7 +744,7 @@ on_expWizard_response                  (GtkDialog       *dialog,
     GtkEntry *output = GTK_ENTRY(lookup_widget(GTK_WIDGET(dialog), "resultExp"));/* resulExp = name of GtkEntry for the final RegEx formula */
     gchar *finalRegex;
     GtkComboBox *retCombo;/* contains a pointer on main Window, for GtkCombo for files OR GtkCombo for containing text */
-    
+
     if (typeRegex == FILE_REGEX_TYPE) {
         retCombo = GTK_COMBO_BOX(lookup_widget(mainWindowApp, "fileName"));/* filename = GtkWidget, field of the combo in main window */
     } else if (typeRegex == CONTEXT_REGEX_TYPE) {
@@ -756,7 +754,7 @@ on_expWizard_response                  (GtkDialog       *dialog,
         gtk_widget_destroy(GTK_WIDGET(dialog));
         return;
     }
-    
+
     switch (response_id) {
         case GTK_RESPONSE_HELP:
             SMsyscall(_("http://searchmonkey.sourceforge.net/index.php/Regular_expression_builder"), BROWSER_LIST);
@@ -816,7 +814,7 @@ on_midType_changed                     (GtkComboBox     *combobox,
 
     updateTypeChangeEntry(combobox, entry, repeat);
     updateRegExWizard(GTK_WIDGET(combobox));
-    
+
 }
 
 
@@ -905,11 +903,11 @@ void
 on_addMidContents_clicked              (GtkButton       *button,
                                         gpointer         user_data)
 {
-    GtkComboBox *type = GTK_COMBO_BOX(lookup_widget(GTK_WIDGET(button), "midType"));    
+    GtkComboBox *type = GTK_COMBO_BOX(lookup_widget(GTK_WIDGET(button), "midType"));
     GtkEntry *entry = GTK_ENTRY(lookup_widget(GTK_WIDGET(button), "midEntry"));
     GtkComboBox *repeat = GTK_COMBO_BOX(lookup_widget(GTK_WIDGET(button), "midOccurance"));
     GtkEntry *iterStr = GTK_ENTRY(lookup_widget(GTK_WIDGET(button), "midSelection"));
-    
+
     appendTableRow(lookup_widget(GTK_WIDGET(button), "midTreeView"),
                    5,
                    gtk_combo_box_text_get_active_text (GTK_COMBO_BOX_TEXT(type)),
@@ -941,14 +939,14 @@ on_modifiedSelectedContents_clicked    (GtkButton       *button,
 
   g_assert(treeview != NULL);
   g_assert(selection != NULL);
-  
+
   if (gtk_tree_selection_get_selected (selection, &model, &iter)) {
     g_assert(model != NULL);
     gtk_tree_model_get (model, &iter, REGEX_TYPE_INT_COLUMN, &type,
                         REGEX_ENTRY_COLUMN, &entry,
                         REGEX_REPEAT_INT_COLUMN, &repeat,
                         -1);
-    
+
     gtk_combo_box_set_active(GTK_COMBO_BOX(lookup_widget(GTK_WIDGET(button), "midType")), type);
     gtk_entry_set_text(GTK_ENTRY(lookup_widget(GTK_WIDGET(button), "midEntry")), entry);
     gtk_combo_box_set_active(GTK_COMBO_BOX(lookup_widget(GTK_WIDGET(button), "midOccurance")), repeat);
@@ -959,7 +957,7 @@ on_modifiedSelectedContents_clicked    (GtkButton       *button,
       gtk_entry_set_text(GTK_ENTRY(lookup_widget(GTK_WIDGET(button), "midSelection")), iterStr);
       g_free(iterStr);
     }
-    
+
   }
 }
 
@@ -972,11 +970,11 @@ on_deleteSelectedContents_clicked      (GtkButton       *button,
   GtkTreeSelection *selection = gtk_tree_view_get_selection (treeview);
   GtkTreeIter iter;
   GtkTreeModel *model;
-  GtkComboBox *type = GTK_COMBO_BOX(lookup_widget(GTK_WIDGET(button), "midType"));    
+  GtkComboBox *type = GTK_COMBO_BOX(lookup_widget(GTK_WIDGET(button), "midType"));
   GtkEntry *entry = GTK_ENTRY(lookup_widget(GTK_WIDGET(button), "midEntry"));
   GtkEntry *iterC = GTK_ENTRY(lookup_widget(GTK_WIDGET(button), "midSelection"));
   GtkComboBox *repeat = GTK_COMBO_BOX(lookup_widget(GTK_WIDGET(button), "midOccurance"));
-  
+
   if (gtk_tree_selection_get_selected (selection, &model, &iter)) {
     gtk_list_store_remove(GTK_LIST_STORE(model), &iter);
     gtk_combo_box_set_active(type, 0);
@@ -999,7 +997,7 @@ on_midTreeView_realize                 (GtkWidget       *widget,
     GtkTreeViewColumn *column;
     GtkCellRenderer *renderer = gtk_cell_renderer_text_new ();
 
-    GtkListStore *store = gtk_list_store_new (REGEX_N_COLUMNS,/* number of total columns in Regex wizard- 1 janv 2018 Luc A*/                                            
+    GtkListStore *store = gtk_list_store_new (REGEX_N_COLUMNS,/* number of total columns in Regex wizard- 1 janv 2018 Luc A*/
                                               G_TYPE_STRING,
                                               G_TYPE_STRING,
                                               G_TYPE_STRING,
@@ -1034,7 +1032,7 @@ on_updateSelectedContents_clicked      (GtkButton       *button,
   GtkTreeView *treeview = GTK_TREE_VIEW(lookup_widget(GTK_WIDGET(button), "midTreeView"));
   GtkTreeIter iter;
   GtkTreeModel *model = gtk_tree_view_get_model (treeview);
-  GtkComboBox *type = GTK_COMBO_BOX(lookup_widget(GTK_WIDGET(button), "midType"));    
+  GtkComboBox *type = GTK_COMBO_BOX(lookup_widget(GTK_WIDGET(button), "midType"));
   GtkEntry *entry = GTK_ENTRY(lookup_widget(GTK_WIDGET(button), "midEntry"));
   GtkEntry *iterC = GTK_ENTRY(lookup_widget(GTK_WIDGET(button), "midSelection"));
   GtkComboBox *repeat = GTK_COMBO_BOX(lookup_widget(GTK_WIDGET(button), "midOccurance"));
@@ -1046,11 +1044,11 @@ on_updateSelectedContents_clicked      (GtkButton       *button,
   g_assert (entry != NULL);
   g_assert (repeat != NULL);
   g_assert (iterStr != NULL);
-  
+
   if (*iterStr == '\0') {
     return;
   }
-  
+
   gtk_tree_model_get_iter_from_string (model, &iter, iterStr);
   if (gtk_combo_box_get_active(type) == REGWIZ_DONT_KNOW) {
     gtk_list_store_remove(GTK_LIST_STORE(model), &iter);
@@ -1065,7 +1063,7 @@ on_updateSelectedContents_clicked      (GtkButton       *button,
     gtk_entry_set_text(GTK_ENTRY(lookup_widget(GTK_WIDGET(button), "midSelection")), "");
     return; /* Delete entry instead */
   }
-    
+
   gtk_list_store_set (GTK_LIST_STORE(model), &iter,
                       REGEX_TYPE_COLUMN, gtk_combo_box_text_get_active_text (GTK_COMBO_BOX_TEXT(type)),
                       REGEX_ENTRY_COLUMN, gtk_entry_get_text(entry),
@@ -1086,7 +1084,7 @@ on_midSelection_changed                (GtkEditable     *editable,
                                         gpointer         user_data)
 {
   const gchar *selection = gtk_entry_get_text(GTK_ENTRY(editable));
-  
+
   if (*selection != '\0') {
     gtk_widget_set_sensitive(lookup_widget(GTK_WIDGET(editable), "updateSelectedContents"), TRUE);
   } else {
@@ -1106,7 +1104,7 @@ on_expWizard_realize                   (GtkWidget       *widget,
   } else if (widgetType == CONTEXT_REGEX_TYPE) {
     gtk_window_set_title (GTK_WINDOW (contextRegexWizard), _("Context Expression Wizard"));
   }
-  
+
   gtk_combo_box_set_active(GTK_COMBO_BOX(lookup_widget(widget, "startType")), REGWIZ_DONT_KNOW);
   gtk_combo_box_set_active(GTK_COMBO_BOX(lookup_widget(widget, "startOccurance")), REGWIZ_REPEAT_ONCE);
   gtk_combo_box_set_active(GTK_COMBO_BOX(lookup_widget(widget, "midType")), REGWIZ_DONT_KNOW);
@@ -1159,7 +1157,7 @@ on_online_release_notes1_activate      (GtkMenuItem     *menuitem,
                                         gpointer         user_data)
 {
   /* Browse to a new release notes subset. Note redirect required by website */
-  gchar *website = g_strdup_printf(_("https://sourceforge.net/projects/searchmonkey/files/gSearchmonkey%20GTK%20%28Gnome%29/0.8.2%20%5Bstable%5D/"), PACKAGE, VERSION);
+  gchar *website = g_strdup_printf(_("https://sourceforge.net/projects/searchmonkey/files/gSearchmonkey%20GTK%20%28Gnome%29/0.8.2%20%5Bstable%5D/"), config_Package, config_Version);
   SMsyscall(website, BROWSER_LIST);
 }
 
@@ -1179,7 +1177,7 @@ on_configResetAll_clicked              (GtkButton       *button,
 
     /* Delete the config file, and disable saving on exit - attempt to restart searchmonkey too? */
     if (g_remove(gConfigFile) != 0) {
-      g_print(_("Error! Unable to remove config file %s.\n"), gConfigFile);    
+      g_print(_("Error! Unable to remove config file %s.\n"), gConfigFile);
     }
     g_object_set_data(G_OBJECT(mainWindowApp), CONFIG_DISABLE_SAVE_CONFIG_STRING, GINT_TO_POINTER(CONFIG_DISABLE_SAVE_CONFIG));
     g_spawn_command_line_async (searchmonkeyExe, NULL); /* Assume it worked */
@@ -1187,7 +1185,7 @@ on_configResetAll_clicked              (GtkButton       *button,
     gtk_main_quit(); /* Exit this instance */
     return;
   }
-  gtk_widget_destroy (confirmDialog);  
+  gtk_widget_destroy (confirmDialog);
 }
 
 
@@ -1199,7 +1197,7 @@ on_configSaveNow_clicked               (GtkButton       *button,
 
   /* Immediately unrealize check button */
   unrealizeToggle(GTK_WIDGET(button), keyString, "configuration", "configPromptSave");
-  
+
   storeGKeyFile(keyString);
   setConfigFileLocation (GTK_WIDGET(button));
 }
@@ -1307,7 +1305,7 @@ on_horizontal_results1_activate        (GtkMenuItem     *menuitem,
 void
 on_vertical_results1_activate          (GtkMenuItem     *menuitem,
                                         gpointer         user_data)
-{ 
+{
   if (gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(menuitem))) {
     setResultsViewHorizontal(GTK_WIDGET(menuitem), FALSE); /* default to vertical */
   }
@@ -1393,7 +1391,7 @@ on_searchNotebook_switch_page          (GtkNotebook     *notebook,
                                         gpointer         user_data)
 {
   guint old_page_num = gtk_notebook_get_current_page(notebook);
-  
+
   if (old_page_num == 0) { /* If leaving basic mode - save settings */
     setExpertSearchMode(GTK_WIDGET(notebook), TRUE);
   } else if (old_page_num == 1) { /* If leaving expert mode - save settings */
@@ -1414,7 +1412,7 @@ on_aboutSearchmonkey_response          (GtkDialog       *dialog,
                                         gpointer         user_data)
 {
   GtkWidget *creditsDialog;
-  
+
   if (response_id == GTK_RESPONSE_OK) { /* Show credits */
     creditsDialog = create_creditsDialog();
     gtk_widget_show(creditsDialog);
@@ -1432,8 +1430,8 @@ on_autosize_columns_activate           (GtkMenuItem     *menuitem,
   gboolean autoColumnWidth = gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(menuitem));
 
   g_assert(keyString != NULL);
-  
-  realizeTreeviewColumns (GTK_WIDGET(mainWindowApp), keyString, "history", "treeview", autoColumnWidth);  
+
+  realizeTreeviewColumns (GTK_WIDGET(mainWindowApp), keyString, "history", "treeview", autoColumnWidth);
 }
 
 /* surprise : menu empty at last 2017
@@ -1447,7 +1445,7 @@ on_edit_file1_activate                 (GtkMenuItem     *menuitem,
 {
  GtkTreeView *treeView;
  gchar *fullFileName;
-  
+
   if (getResultsViewHorizontal(GTK_WIDGET(menuitem))) {
     treeView = GTK_TREE_VIEW(lookup_widget(GTK_WIDGET(menuitem), "treeview1"));
   } else {
@@ -1473,7 +1471,7 @@ on_open_folder1_activate               (GtkMenuItem     *menuitem,
 {
  GtkTreeView *treeView;
   gchar *location;
-  
+
   if (getResultsViewHorizontal(GTK_WIDGET(menuitem))) {
     treeView = GTK_TREE_VIEW(lookup_widget(GTK_WIDGET(menuitem), "treeview1"));
   } else {
@@ -1521,14 +1519,14 @@ on_dosExpressionRadioFile_clicked      (GtkButton       *button,
   if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(button))) {
     changeModel(GTK_WIDGET(button), "regex", "noregex");
   }
-  gtk_statusbar_pop(statusbar, STATUSBAR_CONTEXT_ID(statusbar));  
+  gtk_statusbar_pop(statusbar, STATUSBAR_CONTEXT_ID(statusbar));
   if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (lookup_widget(GTK_WIDGET(button), "dosExpressionRadioFile"))))
-    {        
+    {
         gtk_statusbar_push(statusbar, STATUSBAR_CONTEXT_ID(statusbar),
                      _("research mode with jokers(DOS like)"));
     }
   else  gtk_statusbar_push(statusbar, STATUSBAR_CONTEXT_ID(statusbar),
-                     _("research mode with RegEx")); 
+                     _("research mode with RegEx"));
 }
 
 
@@ -1571,7 +1569,7 @@ on_LessThanSize_focus_out_event         (GtkWidget       *widget,
 {
   gchar * regexp;
   guint flags;
-  // printf("combo Less changée \n");  
+  // printf("combo Less changée \n");
   return FALSE;
 }
 
@@ -1596,7 +1594,7 @@ on_regexp_focus_out_event              (GtkWidget       *widget,
   gchar * regexp;
   guint flags;
   gchar* error = _("Error! Invalid 'file name' regular expression");
-  
+
   if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget(widget, "regularExpressionRadioFile")))) {
     if (getExtendedRegexMode(widget)) {
       flags |= REG_EXTENDED;
@@ -1604,7 +1602,7 @@ on_regexp_focus_out_event              (GtkWidget       *widget,
     flags |= REG_NOSUB;
 
     regexp = gtk_combo_box_text_get_active_text (GTK_COMBO_BOX_TEXT(widget));
-  
+
     if (test_regexp(regexp, flags, error)) {
       addUniqueRow(widget, regexp);
     }
@@ -1620,14 +1618,14 @@ on_regexp2_focus_out_event             (GtkWidget       *widget,
   gchar * regexp;
   guint flags;
   gchar* error = _("Error! Invalid 'containing text' regular expression");
-  
+
   if (getExtendedRegexMode(widget)) {
     flags |= REG_EXTENDED;
   }
   flags |= REG_NOSUB;
 
   regexp = gtk_combo_box_text_get_active_text (GTK_COMBO_BOX_TEXT(widget));
-  
+
   if (test_regexp(regexp, flags, error)) {
     addUniqueRow(widget, regexp);
   }
@@ -1660,7 +1658,7 @@ on_searchNotebook_focus_out_event      (GtkWidget       *widget,
 {
   GtkWidget *notebook = lookup_widget(widget, "searchNotebook");
   guint old_page_num = gtk_notebook_get_current_page(GTK_NOTEBOOK(notebook));
-  
+
   if (old_page_num == 0) { /* If currently showing basic mode - then save these settings  */
     setExpertSearchMode(notebook, TRUE);
   } else { /* Otherwise use expert settings as the default */
@@ -1675,7 +1673,7 @@ on_limitContentsCheckResults_toggled   (GtkToggleButton *togglebutton,
                                         gpointer         user_data)
 {
   gboolean active = gtk_toggle_button_get_active(togglebutton);
-  gtk_widget_set_sensitive(lookup_widget(GTK_WIDGET(togglebutton), "limit_contents_hbox"), active);	
+  gtk_widget_set_sensitive(lookup_widget(GTK_WIDGET(togglebutton), "limit_contents_hbox"), active);
 }
 
 
@@ -1691,7 +1689,7 @@ on_autoComplete_response               (GtkDialog       *dialog,
   gint i,j;
 
   if (response_id == GTK_RESPONSE_OK) { /* Can only happen with valid data.. */
-    /* Store new values into configuration */  
+    /* Store new values into configuration */
     choosers[BROWSER_LIST] = lookup_widget(parent, "configWebBrowser");
     choosers[TEXTEDITOR_LIST] = lookup_widget(parent, "configTextEditor");
     choosers[FILEEXPLORER_LIST] = lookup_widget(parent, "configFileExplorer");

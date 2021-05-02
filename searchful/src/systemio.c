@@ -2,7 +2,7 @@
  * File: systemio.c
  * Description: This file deals with CSV file creation, and parsing
  */
-
+#include "0config.h"
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
@@ -68,7 +68,7 @@ gchar *remove_spaces(const gchar *str)
          str2[j-1]=str[i];
          j++;
        }
-   } 
+   }
  str2[j-1]='\0';
  return str2;
 }
@@ -123,7 +123,7 @@ gchar *resultsToCsvString(GtkWidget *widget)
       return NULL;
   }
   retStringArray = g_malloc((2 + lineCount) * sizeof(gchar *));
-  
+
   /* Get column/row separator strings */
   if (g_key_file_has_key(keyString, "configuration", "configResultEOF", NULL)) {
     oldString = g_key_file_get_string(keyString, "configuration", "configResultEOF", NULL);
@@ -195,8 +195,8 @@ gchar *resultsToCsvString(GtkWidget *widget)
  */
 gchar *quoteString(const gchar *delimiter, const gchar *string)
 {
-  return g_strconcat(delimiter, string, delimiter, NULL);  
-} 
+  return g_strconcat(delimiter, string, delimiter, NULL);
+}
 
 /*
  * callback helper: save results to CSV.
@@ -228,7 +228,7 @@ void saveResults(GtkWidget *widget)
   gtk_file_chooser_set_current_folder (GTK_FILE_CHOOSER (dialog), g_get_home_dir());
   gtk_file_chooser_set_current_name (GTK_FILE_CHOOSER (dialog), "results.csv");
   realizeFileDialog(dialog, keyString, "saveResults", "saveFileDialog");
-  
+
   while (1) {
     if (gtk_dialog_run(GTK_DIALOG(dialog)) == GTK_RESPONSE_OK) {
       filename = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (dialog));
@@ -280,7 +280,7 @@ void saveResults(GtkWidget *widget)
  * Callback helper: import criteria from local text file, and parse user options.
  * TODO: Save state of import dialog so that users do not need to keep modifying options between sessions.
  */
-void importCriteria(GtkWidget *widget) 
+void importCriteria(GtkWidget *widget)
 {
   GtkWidget *import = create_importCriteria();
   GList *allCriteria;
@@ -293,7 +293,7 @@ void importCriteria(GtkWidget *widget)
   gchar *orString;
   GError *error = NULL;
   GtkWidget *warnDialog;
-  
+
   while (gtk_dialog_run(GTK_DIALOG(import)) == GTK_RESPONSE_OK) {
     filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(lookup_widget(import, "filechooserwidgetImport")));
     if (filename != NULL) {
@@ -301,9 +301,9 @@ void importCriteria(GtkWidget *widget)
       if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget(import, "fileNameRadioImport")))) {
         dropDownBox = lookup_widget(widget, "fileName");
       } else { /* Assume containing text import */
-        dropDownBox = lookup_widget(widget, "containingText");      
+        dropDownBox = lookup_widget(widget, "containingText");
       }
-      
+
       if (g_file_get_contents (filename, &contents, &length, &error)) {
         splitResult = g_strsplit (contents, "\n", -1); /* Split completely */
         if (splitResult != NULL) {
@@ -332,7 +332,7 @@ void importCriteria(GtkWidget *widget)
           gtk_dialog_run(GTK_DIALOG(warnDialog));
           gtk_widget_destroy(warnDialog);
         }
-        
+
       } else { /* !g_file_get_contents */
         warnDialog = gtk_message_dialog_new(GTK_WINDOW(import),
                                             (GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT),
@@ -362,7 +362,7 @@ void importCriteria(GtkWidget *widget)
  * Callback helper: export criteria to local text file, depending on user options.
  * TODO: Save state of export dialog so that users do not need to keep modifying options between sessions.
  */
-void exportCriteria(GtkWidget *widget) 
+void exportCriteria(GtkWidget *widget)
 {
   GtkWidget *export = create_exportCriteria();
   gchar *filename;
@@ -382,7 +382,7 @@ void exportCriteria(GtkWidget *widget)
       if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget(export, "fileNameRadioExport")))) {
         dropDownBox = lookup_widget(widget, "fileName");
       } else { /* Assume containing text export */
-        dropDownBox = lookup_widget(widget, "containingText");      
+        dropDownBox = lookup_widget(widget, "containingText");
       }
       gstr = g_string_new ("");
       if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget(export, "singleExportRadio")))) {
@@ -392,7 +392,7 @@ void exportCriteria(GtkWidget *widget)
           gtk_tree_model_get (model, &iter,
                               0, &readString,
                               -1);
-          if (readString != NULL) {  
+          if (readString != NULL) {
             g_string_append(gstr, readString);
             g_string_append(gstr, "\n");
             g_free(readString);
@@ -414,7 +414,7 @@ void exportCriteria(GtkWidget *widget)
             gtk_tree_model_get (model, &iter,
                                 0, &readString,
                                 -1);
-            if (readString != NULL) {  
+            if (readString != NULL) {
               g_string_append(gstr, readString);
               g_string_append(gstr, "\n");
               g_free(readString);
@@ -448,9 +448,9 @@ void exportCriteria(GtkWidget *widget)
         g_error_free(error);
         error = NULL;
         gtk_dialog_run(GTK_DIALOG(warnDialog));
-        gtk_widget_destroy(warnDialog);        
+        gtk_widget_destroy(warnDialog);
       }
-      
+
       g_free(outputString);
       g_free(filename);
     } else { /* !filename */
@@ -463,7 +463,7 @@ void exportCriteria(GtkWidget *widget)
       gtk_widget_destroy(warnDialog);
     }
   }
-  gtk_widget_destroy(export);  
+  gtk_widget_destroy(export);
 }
 
 
@@ -627,7 +627,7 @@ gboolean SMsyscall (const gchar *address, syscallType type)
   /* Read in executable string, plus attributes*/
   switch (type) {
   case BROWSER_LIST:
-    if ((!g_key_file_has_key(keyString, "configuration", "configWebBrowser", NULL)) || 
+    if ((!g_key_file_has_key(keyString, "configuration", "configWebBrowser", NULL)) ||
           (!g_key_file_has_key(keyString, "configuration", "configWebBrowserAttributes", NULL))) {
       okDialog = gtk_message_dialog_new(GTK_WINDOW(mainWindowApp), (GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT),
                                         GTK_MESSAGE_WARNING, GTK_BUTTONS_OK,
@@ -639,8 +639,8 @@ gboolean SMsyscall (const gchar *address, syscallType type)
     executable = g_key_file_get_string (keyString, "configuration", "configWebBrowser", NULL);
     attributes = g_key_file_get_string (keyString, "configuration", "configWebBrowserAttributes", NULL);
     break;
-  case TEXTEDITOR_LIST: 
-    if ((!g_key_file_has_key(keyString, "configuration", "configTextEditor", NULL)) || 
+  case TEXTEDITOR_LIST:
+    if ((!g_key_file_has_key(keyString, "configuration", "configTextEditor", NULL)) ||
           (!g_key_file_has_key(keyString, "configuration", "configTextEditorAttributes", NULL))) {
       okDialog = gtk_message_dialog_new(GTK_WINDOW(mainWindowApp), (GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT),
                                         GTK_MESSAGE_WARNING, GTK_BUTTONS_OK,
@@ -653,7 +653,7 @@ gboolean SMsyscall (const gchar *address, syscallType type)
     attributes = g_key_file_get_string (keyString, "configuration", "configTextEditorAttributes", NULL);
     break;
   case FILEEXPLORER_LIST:
-    if ((!g_key_file_has_key(keyString, "configuration", "configFileExplorer", NULL)) || 
+    if ((!g_key_file_has_key(keyString, "configuration", "configFileExplorer", NULL)) ||
           (!g_key_file_has_key(keyString, "configuration", "configFileExplorerAttributes", NULL))) {
       okDialog = gtk_message_dialog_new(GTK_WINDOW(mainWindowApp), (GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT),
                                         GTK_MESSAGE_WARNING, GTK_BUTTONS_OK,
@@ -673,7 +673,7 @@ gboolean SMsyscall (const gchar *address, syscallType type)
   /* we must escape spaces from filenames - Luc A Feb 2018*/
   if( type==TEXTEDITOR_LIST)
     s1 = replaceAttributeString(attributes,(gchar*) remove_spaces(address));
-    else 
+    else
       s1 = replaceAttributeString(attributes, address);
 
   if (s1 != NULL) {
@@ -685,7 +685,7 @@ gboolean SMsyscall (const gchar *address, syscallType type)
       retVal = TRUE;
     }
   }
- 
+
   /* Clean up */
   g_free(executable);
   g_free(attributes);
@@ -740,7 +740,7 @@ gchar *replaceAttributeString(gchar *rawString, const gchar *replacement)
       g_string_prepend(s1, " ");
   }
 
-  return g_string_free (s1, FALSE);  
+  return g_string_free (s1, FALSE);
 }
 
 
@@ -771,7 +771,7 @@ gboolean mkFullDir(gchar *folderName, gint mode)
   gchar *partialFolderName, *pPartialFolderName;
   gchar **folderParts;
   gint i = 0;
-  
+
   /* Completely split folderName into parts */
   folderParts = g_strsplit_set(folderName, G_DIR_SEPARATOR_S, -1);
   partialFolderName = g_strdup(folderName);
@@ -780,13 +780,13 @@ gboolean mkFullDir(gchar *folderName, gint mode)
   while (folderParts[i] != NULL) {
     pPartialFolderName = g_stpcpy(pPartialFolderName, folderParts[i]);
     pPartialFolderName = g_stpcpy(pPartialFolderName, G_DIR_SEPARATOR_S);
-    
+
     if (!g_file_test (partialFolderName, G_FILE_TEST_IS_DIR)) {
       g_mkdir(partialFolderName, mode);
     }
     i++;
   }
-  
+
   return TRUE;
 }
 
@@ -893,7 +893,7 @@ void copyFile(GtkWidget *widget)
                                      );
     gtk_dialog_run (GTK_DIALOG (dialog));
     gtk_widget_destroy(dialog);
-  }  
+  }
 }
 
 gint check_bom(const char *data, size_t size)
@@ -922,7 +922,7 @@ gint check_bom(const char *data, size_t size)
  * In addition to calling GTK library, the resulting text, if valid
  * is converted to UTF-8 from its native format (usually UTF-8 also)
  * to remove illegal charactors
- * Luc A. 29 dec 2017 : this function is called from search.c module by the function 
+ * Luc A. 29 dec 2017 : this function is called from search.c module by the function
  * phaseTwoSearch()
  * perhaps I can add here a parser/decoder for doc-x and ODT files ?
  * in current lINUX distros, we dont' have to use g_str_escape() so I commented the code
@@ -939,10 +939,10 @@ gboolean g_file_get_contents2 (const gchar *filename,
   gsize bytes_written;
   gchar *charset;
   gint sBOM;
-  
+
   retVal = g_file_get_contents(filename, contents, length, error);
   /* now me must check if is it a valid UTF8 string ! Luc A Feb 2018 */
- 
+
   if (g_utf8_validate (*contents, *length, NULL)){
                 return TRUE;
       }
@@ -963,7 +963,7 @@ gboolean g_file_get_contents2 (const gchar *filename,
                   retVal = FALSE;
                 }
              else {
-                    g_free(*contents);    
+                    g_free(*contents);
                     *contents = retContents;
                     *length = bytes_written;
                     retVal = TRUE;
@@ -981,16 +981,16 @@ gboolean g_file_get_contents2 (const gchar *filename,
                   retVal = FALSE;
                 }
              else {
-                    g_free(*contents);    
+                    g_free(*contents);
                     *contents = retContents;
                     *length = bytes_written;
                     retVal = TRUE;
                   }
              break;
-            } 
+            }
           case 4:
             {
-            
+
              retContents = g_convert_with_fallback (*contents, *length, "UTF-8", "UTF-16",
                                            NULL, &bytes_read, &bytes_written, error);
 
@@ -1000,12 +1000,12 @@ gboolean g_file_get_contents2 (const gchar *filename,
                   retVal = FALSE;
                 }
              else {
-                    g_free(*contents);    
+                    g_free(*contents);
                     *contents = retContents;
                     *length = bytes_written;
                     retVal = TRUE;
                   }
-            } 
+            }
          }/* end switch */
          /* in other cases, we return Error - i.e empry string */
        }/* else NOT UTF8 */
@@ -1082,13 +1082,13 @@ gboolean g_file_set_contents2 (const gchar *filename,
       return FALSE;
     }
   }
-  
+
   fileSD = g_fopen(filename, "w");
   if (fileSD == NULL) {
     set_internal_error(error, errno);
     return FALSE;
   }
-  
+
   g_get_charset ((G_CONST_RETURN char **)&charset); /* Get charactor set locale */
   cContents = g_convert_with_fallback (contents, length, charset, "UTF-8",
                                        NULL, &bytes_read, &bytes_written, error);
@@ -1104,7 +1104,7 @@ gboolean g_file_set_contents2 (const gchar *filename,
   }
 
   fclose(fileSD);
-  
+
   return retVal;
 }
 /*
@@ -1112,12 +1112,12 @@ gboolean g_file_set_contents2 (const gchar *filename,
  */
 void set_internal_error(GError **error, const gint err_no)
 {
-  GQuark domain = g_quark_from_string(PACKAGE "Error");
+  GQuark domain = g_quark_from_string(config_Package "Error");
   GFileError  gerrno = g_file_error_from_errno (err_no);
   gchar *gstrerr = strerror(err_no);
 
   g_assert (gstrerr != NULL);
-  
+
   if (error != NULL) {
     g_assert (*error == NULL);
     *error = g_error_new_literal(domain, gerrno, gstrerr);
@@ -1134,10 +1134,10 @@ void set_internal_error(GError **error, const gint err_no)
 gchar *comboBoxReadCleanFolderName(GtkComboBox *combobox)
 {
 #if 1 /* Creating simplified function as over-complicated */
- 
+
   gchar *tmpStr[2];
   gchar *retStr = NULL;
-  
+
   /* Retrieve look-in directory, ensuring terminated with (extra?) directory separator */
   tmpStr[0] = gtk_combo_box_text_get_active_text (GTK_COMBO_BOX_TEXT(combobox));
   g_assert(tmpStr[0] != NULL);
@@ -1149,7 +1149,7 @@ gchar *comboBoxReadCleanFolderName(GtkComboBox *combobox)
     retStr = g_strdup(g_get_home_dir());
   } else if (g_path_is_absolute(tmpStr[1])) { /* If absolute folder/file name */
     if (g_file_test(tmpStr[0], G_FILE_TEST_IS_DIR)) { /* Already a folder, so lets just clean it up */
-      retStr = g_path_get_dirname(tmpStr[1]);    
+      retStr = g_path_get_dirname(tmpStr[1]);
     } else { /* Otherwise, not looking great, but give it one more shot.. */
       retStr = g_path_get_dirname(tmpStr[0]);
       if (!g_file_test(retStr, G_FILE_TEST_IS_DIR)) { /* Still no-where near being a folder name so exit */
@@ -1199,7 +1199,7 @@ gchar *comboBoxReadCleanFolderName(GtkComboBox *combobox)
     return tmpStr[0]; /* Failed! */
   }
   g_free(tmpStr[0]);
-  
+
   /* Split directory into parts */
   test = g_strsplit (retStr, G_DIR_SEPARATOR_S, -1);
   if (test == NULL) {
@@ -1207,7 +1207,7 @@ gchar *comboBoxReadCleanFolderName(GtkComboBox *combobox)
     return retStr;
   }
   g_assert(test != NULL);
-  
+
   /* Clean up any of the extra path separators */
   test2 = strvdup(test);
   g_strfreev(test);
@@ -1218,7 +1218,7 @@ gchar *comboBoxReadCleanFolderName(GtkComboBox *combobox)
   g_free(retStr);
 
   /* Recreate the cleaned up path name */
-  tmpStr[1] = g_strjoinv (G_DIR_SEPARATOR_S, test2);  
+  tmpStr[1] = g_strjoinv (G_DIR_SEPARATOR_S, test2);
   g_strfreev(test2);
 
   return tmpStr[1];
@@ -1236,7 +1236,7 @@ gchar **strvdup(gchar **strv)
   gint i = 0, j = 0;
 
   g_assert(strv != NULL);
-  
+
   retVal = malloc(sizeof(gchar *) * (1 + g_strv_length(strv)));
 
   retVal[j++] = g_strdup(strv[i++]); /* Always copy first element */
