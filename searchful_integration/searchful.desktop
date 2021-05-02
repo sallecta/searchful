@@ -1,0 +1,12 @@
+[Desktop Entry]
+Version=1.0
+Name=Searchful
+Name[ru]=Поиск searchful
+Comment=Deep search using regular expressions
+Comment[ru]=Углубленный поиск с регулярными выражениями (RegEX)
+Exec=searchful
+Icon=searchful
+StartupNotify=true
+Terminal=false
+Type=Application
+Categories=System;GTK
