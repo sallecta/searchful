@@ -29,7 +29,7 @@ DISTRIB_DESCRIPTION="Ubuntu Focal Fossa"
 
 Code::Blocks 20.03 64 bit
 ```console
-sudo apt install codeblocks
+sudo apt install codeblocks codeblocks-contrib
 ```
 
 ##Compiler

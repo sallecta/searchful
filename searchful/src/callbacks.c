@@ -1,4 +1,4 @@
-#include "0config.h"
+#include "0searchfulDefs.h"
 
 #include <gtk/gtk.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>

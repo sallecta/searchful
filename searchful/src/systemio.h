@@ -15,7 +15,7 @@ typedef enum {
   FILEEXPLORER_LIST,
   G_EXE_LIST_MAX_DEPTH
 } syscallType;
-#define PROGRESS_BAR_NUDGE_VALUE (1 / (gdouble)(G_EXE_LIST_MAX_WIDTH * G_EXE_LIST_MAX_DEPTH)) 
+#define PROGRESS_BAR_NUDGE_VALUE (1 / (gdouble)(G_EXE_LIST_MAX_WIDTH * G_EXE_LIST_MAX_DEPTH))
 
 typedef struct { /* Internal structure for */
   GtkWidget *parent;
@@ -39,7 +39,7 @@ void on_errorMsg_response (GtkDialog *dialog, gint arg1, gpointer user_data);
 
 /* Allow import/export of data to a file for regular expressions */
 void importCriteria(GtkWidget *widget);
-void exportCriteria(GtkWidget *widget); 
+void exportCriteria(GtkWidget *widget);
 
 
 /* System call functions */

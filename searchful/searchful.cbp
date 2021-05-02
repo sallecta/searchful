@@ -11,10 +11,15 @@
 				<Option object_output="$(WORKSPACEDIR)/!out/obj/$(TARGET_NAME)/$(PROJECTNAME)" />
 				<Option type="0" />
 				<Option compiler="gcc" />
+				<Option projectCompilerOptionsRelation="1" />
+				<Option projectLinkerOptionsRelation="1" />
 				<Option projectIncludeDirsRelation="1" />
 				<Option projectResourceIncludeDirsRelation="1" />
 				<Option projectLibDirsRelation="1" />
 				<Compiler>
+					<Add option="-Wextra" />
+					<Add option="-Wall" />
+					<Add option="-std=c++98" />
 					<Add option="-g" />
 					<Add directory="/usr/include/gtk-2.0" />
 					<Add directory="/usr/lib/x86_64-linux-gnu/gtk-2.0/include" />
@@ -38,12 +43,12 @@
 					<Add library="libpoppler-glib" />
 					<Add library="libzip" />
 				</Linker>
+				<ExtraCommands>
+					<Add before="export LC_ALL=C" />
+				</ExtraCommands>
 			</Target>
 		</Build>
-		<Compiler>
-			<Add option="-Wall" />
-		</Compiler>
-		<Unit filename="src/0config.h" />
+		<Unit filename="src/0searchfulDefs.h" />
 		<Unit filename="src/callbacks.c">
 			<Option compilerVar="CC" />
 		</Unit>

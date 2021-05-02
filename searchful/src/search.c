@@ -1,7 +1,4 @@
-#include "0config.h"
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
+#include "0searchfulDefs.h"
 
 #include <gtk/gtk.h>
 #include <glib.h>
@@ -9,8 +6,8 @@
 #include <sys/stat.h>
 #include <time.h>
 #include <regex.h>
-/* Luc A since janv 2018 in order to parse Office files */
 
+/* Luc A since janv 2018 in order to parse Office files */
 #include <errno.h>
 #include <assert.h>
 #include <zip.h>
@@ -1277,9 +1274,7 @@ glong phaseTwoSearch(searchControl *mSearchControl, searchData *mSearchData, sta
     tmpFileName = g_strdup_printf("%s", (gchar*)g_ptr_array_index(mSearchData->fullNameArray, i) );/* modifyed Luc A janv 2018 */
     /* We must check the type-file in order to manage non pure text files like Office files
        Luc A. 7 janv 2018 */
- //   printf("* Phase 2 : je teste le fichier :%s\n", tmpFileName);
-
-// !!!! pnser à mettre une fonction qui renvoit un code et après faire un switch(code)
+ //   printf("* Phase 2 : testing the file :%s\n", tmpFileName);
 
    /* DOCX from MSWord 2007 and newer ? */
     if( g_ascii_strncasecmp (&tmpFileName[strlen(tmpFileName)-4],"docx", 4)  == 0  )

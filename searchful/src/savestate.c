@@ -10,10 +10,7 @@
  *       value - i.e. setConfigLocation, getConfigLocation, saveConfig, loadConfig, etc
  */
 
-#include "0config.h"
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
+#include "0searchfulDefs.h"
 
 #include <gtk/gtk.h>
 #include <glib.h>

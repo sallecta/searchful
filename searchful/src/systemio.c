@@ -2,10 +2,7 @@
  * File: systemio.c
  * Description: This file deals with CSV file creation, and parsing
  */
-#include "0config.h"
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
+#include "0searchfulDefs.h"
 
 #include <gtk/gtk.h>
 #include <glib.h>
