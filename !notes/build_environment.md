@@ -1,6 +1,6 @@
-#Build environment.
+# Build environment.
 
-##Host
+## Host
 
 ```console
 cat  /etc/os-release
@@ -25,14 +25,14 @@ DISTRIB_RELEASE=20.04
 DISTRIB_CODENAME=focal
 DISTRIB_DESCRIPTION="Ubuntu Focal Fossa"
 ```
-##IDE
+## IDE
 
 Code::Blocks 20.03 64 bit
 ```console
 sudo apt install codeblocks codeblocks-contrib
 ```
 
-##Compiler
+## Compiler
 
 ```console
 gcc --version
@@ -42,7 +42,7 @@ This is free software; see the source for copying conditions.  There is NO
 warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 ```
 
-#Dependencies installation.
+# Dependencies installation.
 
 ```console
 sudo apt install libgtk-3-dev libzip-dev libpoppler-glib-dev
